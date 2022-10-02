@@ -17,7 +17,7 @@ import (
 func real_callback(payload *nfqueue.Payload) int {
 	fmt.Println("Real callback")
 	fmt.Printf("  id: %d\n", payload.Id)
-	fmt.Println(hex.Dump(payload.Data))
+	// fmt.Println(hex.Dump(payload.Data))
 	// Decode a packet
 	packet := gopacket.NewPacket(payload.Data, layers.LayerTypeIPv4, gopacket.Default)
 	// Get the TCP layer from this packet
@@ -33,13 +33,15 @@ func real_callback(payload *nfqueue.Payload) int {
 
 		body := gopacket.LayerString(layer)
 
+		fmt.Println(body)
+
 		if strings.HasPrefix(body, "GET") {
 			fmt.Print("Modify Packet!!!!!")
 			payload.Data[40] = 'F'
 			fmt.Println(hex.Dump(payload.Data))
 		}
 
-		fmt.Println(gopacket.LayerDump(layer))
+		// fmt.Println(gopacket.LayerDump(layer))
 	}
 
 	fmt.Println("-- ")
