@@ -36,7 +36,7 @@ func real_callback(payload *nfqueue.Payload) int {
 			fmt.Println(bodyStr)
 
 			// modify payload of application layer
-			*packet.ApplicationLayer().(*gopacket.Payload) = []byte("Hello World!")
+			*packet.ApplicationLayer().(*gopacket.Payload) = []byte("GET / HTTP/1.1")
 
 			// if its tcp we need to tell it which network layer is being used
 			// to be able to handle multiple protocols we can add a if clause around this
@@ -58,7 +58,7 @@ func real_callback(payload *nfqueue.Payload) int {
 			fmt.Println(packetBytes)
 
 			fmt.Println("-- ")
-			payload.SetVerdictModified(nfqueue.NF_ACCEPT, payload.Data)
+			payload.SetVerdictModified(nfqueue.NF_ACCEPT, packetBytes)
 			return 0
 		}
 	}
