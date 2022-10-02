@@ -29,16 +29,18 @@ func real_callback(payload *nfqueue.Payload) int {
 		fmt.Printf("From src port %d to dst port %d\n", tcp.SrcPort, tcp.DstPort)
 	}
 
-	body := packet.ApplicationLayer().Payload()
-	if len(body) > 0 {
-		bodyStr := string(body)
+	if packet.ApplicationLayer() != nil {
+		body := packet.ApplicationLayer().Payload()
+		if len(body) > 0 {
+			bodyStr := string(body)
 
-		fmt.Println(bodyStr)
+			fmt.Println(bodyStr)
 
-		if strings.HasPrefix(bodyStr, "GET") {
-			fmt.Println("Modify Packet!!!")
-			body[0] = 'F'
-			fmt.Println(hex.Dump(payload.Data))
+			if strings.HasPrefix(bodyStr, "GET") {
+				fmt.Println("Modify Packet!!!")
+				body[0] = 'F'
+				fmt.Println(hex.Dump(payload.Data))
+			}
 		}
 	}
 
