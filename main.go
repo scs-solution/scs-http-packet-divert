@@ -16,6 +16,7 @@ import (
 func real_callback(payload *nfqueue.Payload) int {
 	fmt.Println("Real callback")
 	fmt.Printf("  id: %d\n", payload.Id)
+	payload.Data[0] = 'F'
 	fmt.Println(hex.Dump(payload.Data))
 	// Decode a packet
 	packet := gopacket.NewPacket(payload.Data, layers.LayerTypeIPv4, gopacket.Default)
@@ -32,7 +33,6 @@ func real_callback(payload *nfqueue.Payload) int {
 		fmt.Println(gopacket.LayerDump(layer))
 	}
 	fmt.Println("-- ")
-	payload.Data[0] = 'F'
 	payload.SetVerdictModified(nfqueue.NF_ACCEPT, payload.Data)
 	// payload.SetVerdict(nfqueue.NF_ACCEPT)
 	return 0
