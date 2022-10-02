@@ -20,6 +20,7 @@ func real_callback(payload *nfqueue.Payload) int {
 	// fmt.Println(hex.Dump(payload.Data))
 	// Decode a packet
 	packet := gopacket.NewPacket(payload.Data, layers.LayerTypeIPv4, gopacket.Default)
+
 	// Get the TCP layer from this packet
 	if tcpLayer := packet.Layer(layers.LayerTypeTCP); tcpLayer != nil {
 		fmt.Println("This is a TCP packet!")
@@ -27,22 +28,33 @@ func real_callback(payload *nfqueue.Payload) int {
 		tcp, _ := tcpLayer.(*layers.TCP)
 		fmt.Printf("From src port %d to dst port %d\n", tcp.SrcPort, tcp.DstPort)
 	}
-	// Iterate over all layers, printing out each layer type
-	for _, layer := range packet.Layers() {
-		fmt.Println("PACKET LAYER:", layer.LayerType())
 
-		body := string(layer.LayerPayload())
+	body := packet.ApplicationLayer().Payload()
+	if len(body) > 0 {
+		bodyStr := string(body)
 
-		fmt.Println(body)
+		fmt.Println(bodyStr)
 
-		if strings.HasPrefix(body, "GET") {
-			fmt.Print("Modify Packet!!!!!")
-			payload.Data[40] = 'F'
+		if strings.HasPrefix(bodyStr, "GET") {
+			fmt.Println("Modify Packet!!!")
+			body[0] = 'F'
 			fmt.Println(hex.Dump(payload.Data))
 		}
-
-		// fmt.Println(gopacket.LayerDump(layer))
 	}
+
+	// Iterate over all layers, printing out each layer type
+	// for _, layer := range packet.Layers() {
+	// 	fmt.Println("PACKET LAYER:", layer.LayerType())
+
+	// 	body := string(layer.LayerPayload())
+
+	// 	fmt.Println(body)
+
+	// 	if strings.HasPrefix(body, "GET") {
+	// 		fmt.Print("Modify Packet!!!!!")
+	// 		fmt.Println(hex.Dump(payload.Data))
+	// 	}
+	// }
 
 	fmt.Println("-- ")
 	payload.SetVerdictModified(nfqueue.NF_ACCEPT, payload.Data)
