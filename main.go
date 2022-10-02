@@ -34,12 +34,14 @@ func real_callback(payload *nfqueue.Payload) int {
 		body := gopacket.LayerDump(layer)
 
 		if strings.HasPrefix(body, "GET") {
+			fmt.Print("Modify Packet!!!!!")
 			payload.Data[40] = 'F'
+			fmt.Println(hex.Dump(payload.Data))
 		}
 
 		fmt.Println(gopacket.LayerDump(layer))
-
 	}
+
 	fmt.Println("-- ")
 	payload.SetVerdictModified(nfqueue.NF_ACCEPT, payload.Data)
 	// payload.SetVerdict(nfqueue.NF_ACCEPT)
