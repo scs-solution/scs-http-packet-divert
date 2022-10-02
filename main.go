@@ -1,11 +1,10 @@
 package main
 
 import (
-	"encoding/hex"
 	"fmt"
+	"log"
 	"os"
 	"os/signal"
-	"strings"
 	"syscall"
 
 	"github.com/chifflier/nfqueue-go/nfqueue"
@@ -36,11 +35,31 @@ func real_callback(payload *nfqueue.Payload) int {
 
 			fmt.Println(bodyStr)
 
-			if strings.HasPrefix(bodyStr, "GET") {
-				fmt.Println("Modify Packet!!!")
-				body[0] = 'F'
-				fmt.Println(hex.Dump(payload.Data))
+			// modify payload of application layer
+			*packet.ApplicationLayer().(*gopacket.Payload) = []byte("Hello World!")
+
+			// if its tcp we need to tell it which network layer is being used
+			// to be able to handle multiple protocols we can add a if clause around this
+			packet.TransportLayer().(*layers.TCP).SetNetworkLayerForChecksum(packet.NetworkLayer())
+
+			buffer := gopacket.NewSerializeBuffer()
+			options := gopacket.SerializeOptions{
+				ComputeChecksums: true,
+				FixLengths:       true,
 			}
+
+			// Serialize Packet to get raw bytes
+			if err := gopacket.SerializePacket(buffer, options, packet); err != nil {
+				log.Fatalln(err)
+			}
+
+			packetBytes := buffer.Bytes()
+
+			fmt.Println(packetBytes)
+
+			fmt.Println("-- ")
+			payload.SetVerdictModified(nfqueue.NF_ACCEPT, payload.Data)
+			return 0
 		}
 	}
 
