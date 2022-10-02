@@ -31,7 +31,7 @@ func real_callback(payload *nfqueue.Payload) int {
 	for _, layer := range packet.Layers() {
 		fmt.Println("PACKET LAYER:", layer.LayerType())
 
-		body := gopacket.LayerString(layer)
+		body := gopacket.LayerGoString(layer)
 
 		fmt.Println(body)
 
