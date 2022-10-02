@@ -19,7 +19,7 @@ func real_callback(payload *nfqueue.Payload) int {
 
 	// IP + TCP Header Size
 	if len(payload.Data) > 40 {
-		payload.Data[40] = 'F'
+		// payload.Data[40] = 'F'
 	}
 	fmt.Println(hex.Dump(payload.Data))
 	// Decode a packet
