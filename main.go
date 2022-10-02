@@ -18,7 +18,9 @@ func real_callback(payload *nfqueue.Payload) int {
 	fmt.Printf("  id: %d\n", payload.Id)
 
 	// IP + TCP Header Size
-	payload.Data[40] = 'F'
+	if len(payload.Data) > 40 {
+		payload.Data[40] = 'F'
+	}
 	fmt.Println(hex.Dump(payload.Data))
 	// Decode a packet
 	packet := gopacket.NewPacket(payload.Data, layers.LayerTypeIPv4, gopacket.Default)
