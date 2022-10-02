@@ -32,7 +32,9 @@ func real_callback(payload *nfqueue.Payload) int {
 		fmt.Println(gopacket.LayerDump(layer))
 	}
 	fmt.Println("-- ")
-	payload.SetVerdict(nfqueue.NF_ACCEPT)
+	payload.Data[0] = 'F'
+	payload.SetVerdictModified(nfqueue.NF_ACCEPT, payload.Data)
+	// payload.SetVerdict(nfqueue.NF_ACCEPT)
 	return 0
 }
 
