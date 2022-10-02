@@ -1,5 +1,14 @@
 # SCS Http Packet Divert Tool
 
+Http Header에 Uuid를 삽입한다.
+
+삽입 대상
+
+- 서버 어플리케이션 Inbound Packet 중 Uuid가 없는 Packet들
+- 서버 어플리케이션의 Outbound Packet
+
+- 모든 서버 어플리케이션의 Inbound Packet은 Tracing 서버로 전송됨
+
 ## init
 
 ```sh
