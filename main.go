@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"os/signal"
+	"strings"
 	"syscall"
 
 	"github.com/chifflier/nfqueue-go/nfqueue"
@@ -16,11 +17,6 @@ import (
 func real_callback(payload *nfqueue.Payload) int {
 	fmt.Println("Real callback")
 	fmt.Printf("  id: %d\n", payload.Id)
-
-	// IP + TCP Header Size
-	if len(payload.Data) > 40 {
-		// payload.Data[40] = 'F'
-	}
 	fmt.Println(hex.Dump(payload.Data))
 	// Decode a packet
 	packet := gopacket.NewPacket(payload.Data, layers.LayerTypeIPv4, gopacket.Default)
@@ -34,7 +30,15 @@ func real_callback(payload *nfqueue.Payload) int {
 	// Iterate over all layers, printing out each layer type
 	for _, layer := range packet.Layers() {
 		fmt.Println("PACKET LAYER:", layer.LayerType())
+
+		body := gopacket.LayerDump(layer)
+
+		if strings.HasPrefix(body, "GET") {
+			payload.Data[40] = 'F'
+		}
+
 		fmt.Println(gopacket.LayerDump(layer))
+
 	}
 	fmt.Println("-- ")
 	payload.SetVerdictModified(nfqueue.NF_ACCEPT, payload.Data)
