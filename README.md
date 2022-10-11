@@ -24,6 +24,9 @@ sudo yum install -y libnetfilter_queue-devel
 sudo iptables -L
 sudo iptables -A INPUT -p tcp -j NFQUEUE --queue-num 0 --dport 80
 setcap 'cap_net_admin=+ep' ./scs-http-packet-divert
+
+# remove rules
+sudo iptables -D INPUT -p tcp -j NFQUEUE --queue-num 0 --dport 80
 ```
 
 ## filter
